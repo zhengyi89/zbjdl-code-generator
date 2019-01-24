@@ -1,0 +1,110 @@
+<#include "/macro.include"/>
+<#assign className = table.className>
+<#assign tableName = table.sqlName>
+<#assign classNameFirstLower = table.classNameFirstLower>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${basepackage}.repository.${className}Repository">
+	<resultMap id="BaseResultMap" type="${className}">
+	  <#list table.columns as column>
+	  <#if column.columnNameFirstLower=="id">
+	  <id column="ID" jdbcType="DECIMAL" property="id" />
+	  <#else>
+	  <result column="${column.sqlName}" jdbcType="${column.jdbcType}" property="${column.columnNameFirstLower}" />
+    </#if>
+	  </#list>
+  </resultMap>
+
+  <sql id="Example_Where_Clause">
+    <where>
+      <trim prefix="(" prefixOverrides="and" suffix=")">
+      <#list table.columns as column>
+	    <#if !column.isQueryReserve>
+      	<if test="${column.columnNameFirstLower} != null" >
+	      and ${column.sqlName} = ${"#{"}${column.columnNameFirstLower},jdbcType=${column.jdbcType}${"}"}
+	    </if>
+	    </#if>
+	  </#list>
+	  </trim>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    <#list table.columns as column>
+    ${column.sqlName},
+    </#list>
+  </sql>
+  <sql id="Base_Set_Clause">
+    <set>
+      <trim suffixOverrides=",">
+      <#list table.columns as column>
+      <#if !column.isQueryReserve>
+        ${column.sqlName} = ${"#{"}${column.columnNameFirstLower},jdbcType=${column.jdbcType}${"}"},
+      <#elseif column.columnNameFirstLower=="lastUpdateTime">
+  		LAST_UPDATE_TIME = sysdate(),
+      </#if>
+      </#list>
+      </trim>
+    </set>
+  </sql>
+  <sql id="Selective_Column_List">
+  	<#list table.columns as column>
+    <#if !column.isQueryReserve>
+    <if test="${column.columnNameFirstLower} != null">
+      ${column.sqlName},
+    </if>
+    <#elseif column.columnNameFirstLower=="createTime">
+      CREATE_TIME,
+    <#elseif column.columnNameFirstLower=="lastUpdateTime">
+      LAST_UPDATE_TIME,
+    </#if>
+    </#list>
+  </sql>
+  <sql id="Selective_Value_List">
+    <#list table.columns as column>
+    <#if !column.isQueryReserve>
+    <if test="${column.columnNameFirstLower} != null">
+      ${"#{"}${column.columnNameFirstLower},jdbcType=${column.jdbcType}${"},"}
+    </if>
+    <#elseif column.columnNameFirstLower=="createTime">
+    sysdate(),
+    <#elseif column.columnNameFirstLower=="lastUpdateTime">
+    sysdate(),
+    </#if>
+    </#list>
+  </sql>
+  <select id="findList" parameterType="${className}" resultMap="BaseResultMap">
+    select
+    <trim suffixOverrides=",">
+      <include refid="Base_Column_List" />
+    </trim>
+    from ${tableName}
+    <include refid="Example_Where_Clause" />
+    <!-- order by CREATE_DATE -->
+  </select>
+  <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <trim suffixOverrides=",">
+      <include refid="Base_Column_List" />
+    </trim>
+    from ${tableName}
+    where ID = ${"#{"}id,jdbcType=DECIMAL${"}"}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from ${tableName}
+    where ID = ${"#{"}id,jdbcType=DECIMAL${"}"}
+  </delete>
+  <insert id="save" parameterType="${className}">
+    insert into ${tableName}
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <include refid="Selective_Column_List"/>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <include refid="Selective_Value_List"/>
+    </trim>
+  </insert>
+  <update id="update" parameterType="${className}">
+    update ${tableName}
+    <include refid="Base_Set_Clause"/>
+    where ID = ${"#{"}id,jdbcType=DECIMAL${"}"}
+  </update>
+</mapper>

@@ -1,0 +1,42 @@
+<#assign className = table.className>
+<#assign classNameLower = className?uncap_first>
+
+<form method="post" id="godownForma" name="godownForma" action="#">
+	<div class="main">
+		<div class="wrap">
+			<div class="con">
+				<div class="con_title">
+					<h3 class="left fs14 marglr3020">科目详细</h3>
+					<span class="grey"></span>
+				</div>
+				<div class="main_con">
+					<div class="con_article_title02 paddtb20">
+						<#list table.columns as column>
+              <#if column.columnNameFirstLower!="id">
+							<div class="blank20"></div>
+							<div class="con_core_info_div02 rel_pos wid500 padding0">
+								<label class="label_txt wid135 txtright margt10 margr8">
+									<span class="right">${column.remarks}：</span></label>
+								<div class="wid343 paddingt10">
+									<label class="wid333 ip_input_con lightgrey">
+										${'$'}!{pageInfo.${column.columnNameFirstLower}}
+									</label>
+								</div>
+								<div style="display: none;margin-left:150px;" class="left wid360">
+								<span class="label_txt wid190 margt10 red01" error="${classNameLower}"></span>
+								</div>
+							</div>
+              </#if>
+              </#list>
+						<div class="blank20"></div>
+					</div>
+					<div id="areaHid"></div>
+					<div class="con_core_info_div03 paddingl80">
+						<div class="attr_con">
+							<a class="chan_btn right wid93 margr40 margt10" href="${'$'}{rc.contextPath}/${controlPath}/${classNameLower}Index">返回</a> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</form>

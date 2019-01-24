@@ -1,0 +1,82 @@
+<#assign className = table.className>
+<#assign classNameLower = className?uncap_first>
+
+<form action="${'$'}{rc.contextPath}/${controlPath}/${classNameLower}Index" method="post" id="godownForma" name="godownForma">
+	<div class="main">
+		<div class="blank15"></div>
+		<div class="wrap">
+			<div class="con">
+				<div class="con_title">
+					<h3 class="left fs14 marglr3020">${className}管理</h3>
+					<span class="grey"></span>
+				</div>
+				<div class="main_con">
+					<div class="con_article_title tit_zindex3 linehei30">
+						<b class="left paddl67 paddr10">内容筛选</b> <a id="reg2_arrow"
+							class="margt10 btn_arrow_up" href="javascript:;"></a>
+					</div>
+					<div id="reg2_arrow_con" class="con_article_title02 tit_zindex6">
+						
+					 <#list table.columns as column>
+            <#if !column.isQueryReserve>
+    					<div class="left wid280 margt10 rel_pos paddingl15">
+    						<label class="label_txt wid80 txtright margr8 margt11 paddingl0">${column.remarks}：</label>
+    						<div class="input_con_type_top wid190 margt4">
+    							<input type="text" value="${'$'}!{query.${column.columnNameFirstLower}}" id="${column.columnNameFirstLower}" name="${column.columnNameFirstLower}" class="wid190 ip_input_con">
+    						</div>
+    					</div>
+						</#if>
+           </#list>
+					 
+						<div class="con_article_title02 margt10 tit_zindex3">
+							<a onclick="document.getElementById('godownForma').submit();" class="right chan_btn wid60 margr66 margt5" href="javascript:;">查询</a> 
+							<a class="right chan_btn wid60 margr30 margt5" onclick="resetForm('godownForma')" href="javascript:;">清除</a>
+						</div>
+					</div>
+					<div class="bord11 margt10"></div>
+					<div class="con_core_info_main wid1125 paddl60 margt10">
+						<ul class="table_menu">
+							<li><a class="left chan_btn wid60 margl10 margt5" id="addBtn" href="${'$'}{rc.contextPath}/${controlPath}/to${className}Add">新增</a>
+								<a class="left chan_btn wid80 margl10 margt5" onclick="exportExcel()" id="btnExport" href="javascript:;">导出Excel</a>
+							</li>
+						</ul>
+
+						<table id="user_table1" class="chan_table tb_bord01">
+							<thead id="terminalHead">
+								<tr>
+									<#list table.columns as column>
+									<th width="5%">${column.remarks}</th>
+                  </#list>
+									<th width="10%">操作</th>
+								</tr>
+							</thead>
+							<tbody id="godownRows">
+								#if(${'$'}!{pageInfos}) #foreach(${'$'}!{info} in ${'$'}!{pageInfos})
+								<tr>
+									<#list table.columns as column>
+                    <#if column.columnNameFirstLower=="id">
+  										<td><input type="checkbox" name="pageCheckbox" id="pageCheckbox" value="${'$'}{info.id}" /></td>
+                    <#else>
+  										<td>${'$'}!{info.${column.columnNameFirstLower}}</td>
+                    </#if>
+                  </#list>
+									
+									<td>
+										<a onclick="toRedirect('show','2014090900128001')" class="margr4" href="${'$'}{rc.contextPath}/${controlPath}/to${className}Detail?id=${'$'}!{info.id}">明细</a>
+										<a onclick="toRedirect('show','2014090900128001')" class="margr4" href="${'$'}{rc.contextPath}/${controlPath}/to${className}Edit?id=${'$'}!{info.id}">编辑</a>
+										<a onclick="toRedirect('show','2014090900128001')" class="margr4" href="${'$'}{rc.contextPath}/${controlPath}/delete${className}?id=${'$'}!{info.id}">删除</a>
+									</td>
+								</tr>
+								#end #end
+							</tbody>
+						</table>
+					</div>
+					<input type="hidden" name="pageNo" value="${'$'}{pagenation.pageNo}"id="pageNo">
+					<input type="hidden" name="pageSize" value="${'$'}{pagenation.pageSize}" id="pageSize">  
+					#showPager(${'$'}pagenation)
+					<div class="bord11 margt20"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
